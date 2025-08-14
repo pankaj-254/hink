@@ -30,7 +30,7 @@ export default {
     const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
     const patch = await fetch(gitPatch, { cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': 86400 } }}).then(res => res.text())
     const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-    return Response.redirect(url)
+    return Response.redirect(url || GIT_REPO)
   }
 }
 ```
@@ -46,7 +46,7 @@ addEventListener("fetch", async (event) => {
   const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
   const patch = await fetch(gitPatch).then(res => res.text())
   const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-  event.respondWith(new Response(null, { status: 302, headers: { Location: url } }))
+  event.respondWith(new Response(null, { status: 302, headers: { Location: url || GIT_REPO } }))
 });
 ```
 
@@ -104,7 +104,7 @@ export default {
     const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
     const patch = await fetch(gitPatch, { cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': 86400 } }}).then(res => res.text())
     const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-    return Response.redirect(url)
+    return Response.redirect(url || GIT_REPO)
   }
 }
 ```
@@ -120,7 +120,7 @@ addEventListener("fetch", async (event) => {
   const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
   const patch = await fetch(gitPatch).then(res => res.text())
   const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-  event.respondWith(new Response(null, { status: 302, headers: { Location: url } }))
+  event.respondWith(new Response(null, { status: 302, headers: { Location: url || GIT_REPO } }))
 });
 ```
 
